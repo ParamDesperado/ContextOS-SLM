@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ContextOS</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--ink:#1c2230;--mute:#667085;--line:#e3e6eb;--accent:#2457c5;--good:#17803d;--warn:#b54708;--bad:#b42318;}
+@media (prefers-color-scheme:dark){:root{--bg:#12151b;--card:#1b2029;--ink:#e8ebf0;--mute:#98a2b3;--line:#2c3340;--accent:#7ea6ff;--good:#4ade80;--warn:#fbbf24;--bad:#f87171;}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 "Segoe UI",system-ui,sans-serif}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:baseline;padding:16px 20px 4px}h1{font-size:20px;margin:0}header span{color:var(--mute)}
+main{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;padding:12px 20px 24px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+h2{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--mute);margin:0 0 8px}
+.c3{grid-column:span 3}.c4{grid-column:span 4}.c5{grid-column:span 5}.c7{grid-column:span 7}.c8{grid-column:span 8}.c12{grid-column:span 12}
+@media (max-width:900px){.c3,.c4,.c5,.c7,.c8{grid-column:span 12}}
+.big{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums}.sub{color:var(--mute);font-size:12px}
+canvas{width:100%;height:96px;display:block}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}td,th{text-align:left;padding:3px 6px 3px 0;border-bottom:1px solid var(--line);font-size:13px;overflow-wrap:anywhere}th{color:var(--mute);font-weight:500}
+form{display:flex;gap:8px}input[type=text]{flex:1;min-width:0;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;font:inherit}
+button{padding:8px 13px;border:1px solid var(--accent);background:var(--accent);color:var(--card);border-radius:8px;font:inherit;cursor:pointer}button.ghost{background:transparent;color:var(--accent)}
+#log{max-height:300px;overflow:auto;margin-top:10px}.turn{padding:8px 0;border-top:1px solid var(--line)}.q{font-weight:600}.meta{color:var(--mute);font-size:12px;overflow-wrap:anywhere}
+.pill{display:inline-block;padding:1px 8px;border-radius:99px;border:1px solid currentColor;font-size:12px}.allow{color:var(--good)}.confirm{color:var(--warn)}.deny{color:var(--bad)}
+</style>
+</head>
+<body>
+<header><h1>ContextOS</h1><span>context-aware OS layer driven by an on-device small language model. Nothing leaves this machine.</span></header>
+<main>
+  <section class="card c3"><h2>Activity</h2><div class="big" id="activity">-</div><div class="sub" id="fg"></div></section>
+  <section class="card c3"><h2>CPU</h2><div class="big" id="cpu">-</div><div class="sub" id="core"></div></section>
+  <section class="card c3"><h2>Memory</h2><div class="big" id="mem">-</div><div class="sub" id="memd"></div></section>
+  <section class="card c3"><h2>Small language model</h2><div class="big" id="slm" style="font-size:18px">-</div><div class="sub" id="slmd"></div></section>
+
+  <section class="card c7"><h2>Ask the system</h2>
+    <form id="f"><input id="q" type="text" placeholder="why is my laptop slow?  /  kill whatever is eating my ram  /  turn on focus mode" autocomplete="off"><button>Ask</button></form>
+    <div id="log"></div></section>
+  <section class="card c5"><h2>CPU and memory, last 5 minutes</h2><canvas id="chart"></canvas>
+    <div class="sub">Blue is CPU, orange is memory.</div>
+    <h2 style="margin-top:12px">Context governor</h2>
+    <div id="gov"></div><button class="ghost" id="govt" style="margin-top:6px">Toggle governor</button></section>
+
+  <section class="card c5"><h2>Top processes by CPU</h2><table id="procs"></table></section>
+  <section class="card c7"><h2>Audit log (hash chained)</h2><table id="audit"></table><div class="sub" id="auditv"></div></section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const post=(u,b)=>fetch(u,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)}).then(r=>r.json());
+function draw(h){const c=$("chart"),d=devicePixelRatio||1,w=c.clientWidth,ht=c.clientHeight;c.width=w*d;c.height=ht*d;const x=c.getContext("2d");x.scale(d,d);x.clearRect(0,0,w,ht);
+ const line=(k,col)=>{x.beginPath();x.strokeStyle=col;x.lineWidth=2;h.forEach((p,i)=>{const X=h.length>1?i/(h.length-1)*w:0,Y=ht-p[k]/100*(ht-4)-2;i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke()};line("cpu","#2f6fed");line("mem","#e8833a");}
+let shown=0;
+async function tick(){try{const s=await (await fetch("/api/state")).json(),n=s.snapshot;
+ s.turns.slice(shown).forEach(addTurn);shown=s.turns.length;
+ $("activity").textContent=n.activity;$("fg").textContent="foreground: "+(n.foreground||"none");
+ $("cpu").textContent=n.cpu_percent.toFixed(0)+"%";$("core").textContent=n.per_core.length+" logical cores";
+ $("mem").textContent=n.mem_percent.toFixed(0)+"%";$("memd").textContent=n.mem_used_gb.toFixed(1)+" of "+n.mem_total_gb.toFixed(1)+" GB";
+ $("slm").textContent=s.slm.backend;$("slmd").textContent=(s.slm.loaded?"loaded":"not loaded")+(s.slm.requests?` · ${s.slm.requests} requests · ${s.slm.last_tokens_per_s.toFixed(1)} tok/s · load ${s.slm.last_load_s.toFixed(1)} s`:"");
+ draw(s.history);
+ $("procs").innerHTML="<tr><th>Process</th><th>CPU %</th><th>MB</th></tr>"+n.top_cpu.slice(0,6).map(p=>`<tr><td>${esc(p.name)}</td><td>${p.cpu.toFixed(0)}</td><td>${p.mem_mb.toFixed(0)}</td></tr>`).join("");
+ const g=s.governor,last=g.events[g.events.length-1];$("gov").innerHTML=`<span class="pill ${g.enabled?"allow":"deny"}">${g.enabled?"enabled":"disabled"}</span> <span class="pill ${g.engaged?"confirm":"allow"}">${g.engaged?"engaged":"standing by"}</span><div class="meta" style="margin-top:6px">${g.demoted.length?"Demoted: "+esc(g.demoted.join(", ")):"No process demoted."}${last?"<br>Last event: "+esc(last.event)+" "+esc((last.processes||[]).join(", ")):""}</div>`;$("govt").dataset.on=g.enabled?"1":"";
+ $("audit").innerHTML="<tr><th>Actor</th><th>Action</th><th>Decision</th><th>Hash</th></tr>"+s.audit.slice().reverse().map(a=>`<tr><td>${esc(a.actor)}</td><td>${esc(a.action)}</td><td><span class="${esc(a.decision)}">${esc(a.decision)}</span></td><td>${esc(a.hash.slice(0,10))}</td></tr>`).join("");
+ const v=await (await fetch("/api/audit/verify")).json();$("auditv").textContent=(v.intact?"Chain intact":"CHAIN BROKEN")+", "+v.records+" records.";
+}catch(e){}}
+function addTurn(r){const d=document.createElement("div");d.className="turn";
+ d.innerHTML=`<div class="q">${esc(r.request)}</div><div>${esc(r.text)}</div><div class="meta">${esc(r.planner)} chose <b>${esc(r.tool)}</b> ${esc(JSON.stringify(r.args))} in ${r.slm_seconds}s · <span class="${esc(r.decision)}">${esc(r.decision)}</span></div>`;
+ if(r.token){const a=document.createElement("button"),b=document.createElement("button");a.textContent="Approve";b.textContent="Cancel";b.className="ghost";b.style.marginLeft="6px";
+  const done=async ok=>{const o=await post("/api/confirm",{token:r.token,approve:ok});a.remove();b.remove();const e=document.createElement("div");e.textContent=o.text;d.appendChild(e)};a.onclick=()=>done(true);b.onclick=()=>done(false);d.append(a,b)}
+ $("log").prepend(d);}
+$("f").onsubmit=async e=>{e.preventDefault();const t=$("q").value.trim();if(!t)return;$("q").value="";$("q").placeholder="Thinking...";try{await post("/api/ask",{text:t})}finally{$("q").placeholder="Ask something else"}tick()};
+$("govt").onclick=()=>post("/api/governor",{enabled:!$("govt").dataset.on}).then(tick);
+tick();setInterval(tick,2000);
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+flask>=3.0
+psutil>=6.0
+requests>=2.31
+onnxruntime-genai-directml>=0.13; sys_platform == "win32"
+onnxruntime-genai>=0.13; sys_platform != "win32"
+# for tests, benchmarks and the article figures
+pytest>=8.0
+matplotlib>=3.8
+python-docx>=1.1
