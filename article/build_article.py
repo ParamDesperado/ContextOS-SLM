@@ -112,7 +112,7 @@ class Article:
                 node = OxmlElement("w:instrText"); node.text = text
             run._r.append(node)
 
-    def prototype_box(self, url, built_by):
+    def prototype_box(self, url):
         """The front-page section that points at the working prototype."""
         table = self.doc.add_table(rows=1, cols=1)
         table.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -138,7 +138,7 @@ class Article:
         note = cell.add_paragraph()
         note.alignment = WD_ALIGN_PARAGRAPH.CENTER
         note.paragraph_format.space_after = Pt(3)
-        rich(note, f"Prototype developed by **{built_by}**. The full source code, setup steps, tests and the raw results behind every number in this article are in this public repository.", 10)
+        rich(note, "The full source code, setup steps, tests and the raw results behind every number in this article are in this public repository.", 10)
         gap = self.doc.add_paragraph()
         gap.paragraph_format.space_after = Pt(0)
         gap.paragraph_format.line_spacing = Pt(6)
@@ -222,13 +222,13 @@ class Article:
         gap.paragraph_format.line_spacing = Pt(6)
 
 
-def build(authors, affiliation, out, built_by):
+def build(authors, affiliation, out):
     a = Article(", ".join(re.findall(r"([A-Z][a-z]+ [A-Z][a-z]+) \(", authors)) or authors)
     a.center("Contextual Operating System using Small Language Models:", 15, True, 0)
     a.center("Design and Implementation of ContextOS", 13, True, 4)
     a.center(authors, 12, True, 0)
     a.center(affiliation, 9.5, False, 5, italic=True)
-    a.prototype_box(REPO, built_by)
+    a.prototype_box(REPO)
 
     a.p("**Abstract.** An operating system manages resources well, but it does not know what the user is actually doing. In this project we built ContextOS, "
         "a working user-space layer that adds this awareness using a small language model (SLM) that runs entirely on the laptop. It samples system state, works out the "
@@ -438,6 +438,5 @@ if __name__ == "__main__":
     parser.add_argument("--authors", default="Param Sangani (16010424108), Batch B2")
     parser.add_argument("--affiliation", default="Operating Systems Laboratory, Department of Information Technology, K J Somaiya School of Engineering, Mumbai")
     parser.add_argument("--out", default=str(HERE / "ContextOS_Article.docx"))
-    parser.add_argument("--built-by", default="Param Sangani")
     opts = parser.parse_args()
-    build(opts.authors, opts.affiliation, opts.out, opts.built_by)
+    build(opts.authors, opts.affiliation, opts.out)
