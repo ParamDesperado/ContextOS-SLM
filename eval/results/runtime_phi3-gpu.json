@@ -1,0 +1,18 @@
+{
+ "model": "phi3-gpu",
+ "disk_gb": 2.14,
+ "load_s": 2.97,
+ "unload_s": 0.31,
+ "prompt_tokens": 667,
+ "first_token_cold_s": 1.28,
+ "first_token_s": 0.54,
+ "tokens_per_s": 30.7,
+ "rss_before_mb": 44,
+ "rss_loaded_mb": 418,
+ "rss_peak_mb": 659,
+ "rss_after_unload_mb": 190,
+ "gpu_before_mib": 932,
+ "gpu_loaded_mib": 2991,
+ "gpu_peak_mib": 4763,
+ "gpu_after_unload_mib": 932
+}

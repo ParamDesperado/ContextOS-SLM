@@ -1,0 +1,8 @@
+{
+ "sample_mean_ms": 35.4,
+ "sample_p95_ms": 307.0,
+ "duty_cycle_percent_at_2s": 1.77,
+ "classify_us": 2.09,
+ "process_rss_mb": 46.9,
+ "processes_visible": 264
+}

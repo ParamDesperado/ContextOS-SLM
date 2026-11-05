@@ -1,0 +1,18 @@
+{
+ "model": "phi4-gpu",
+ "disk_gb": 3.44,
+ "load_s": 4.4,
+ "unload_s": 0.23,
+ "prompt_tokens": 571,
+ "first_token_cold_s": 12.61,
+ "first_token_s": 12.75,
+ "tokens_per_s": 3.8,
+ "rss_before_mb": 44,
+ "rss_loaded_mb": 2811,
+ "rss_peak_mb": 3099,
+ "rss_after_unload_mb": 79,
+ "gpu_before_mib": 943,
+ "gpu_loaded_mib": 943,
+ "gpu_peak_mib": 943,
+ "gpu_after_unload_mib": 943
+}

@@ -1,0 +1,173 @@
+{
+ "summary": {
+  "idle": {
+   "mean_ms": 3.03,
+   "p50_ms": 3.01,
+   "p95_ms": 3.32,
+   "p99_ms": 3.67,
+   "mean_ms_stdev": 0.26,
+   "p95_ms_stdev": 0.41
+  },
+  "contended": {
+   "mean_ms": 32.48,
+   "p50_ms": 7.61,
+   "p95_ms": 146.1,
+   "p99_ms": 156.97,
+   "mean_ms_stdev": 1.48,
+   "p95_ms_stdev": 1.7
+  },
+  "governed": {
+   "mean_ms": 9.23,
+   "p50_ms": 7.74,
+   "p95_ms": 8.99,
+   "p99_ms": 59.7,
+   "mean_ms_stdev": 1.97,
+   "p95_ms_stdev": 1.18
+  }
+ },
+ "runs": [
+  {
+   "condition": "idle",
+   "tasks": 400,
+   "mean_ms": 2.81,
+   "p50_ms": 2.8,
+   "p95_ms": 3.02,
+   "p99_ms": 3.52,
+   "max_ms": 3.79,
+   "cpu_percent_before": 0.4,
+   "hogs": 0,
+   "demoted": 0,
+   "actions": [],
+   "repeat": 0
+  },
+  {
+   "condition": "contended",
+   "tasks": 400,
+   "mean_ms": 32.91,
+   "p50_ms": 7.55,
+   "p95_ms": 146.12,
+   "p99_ms": 157.45,
+   "max_ms": 171.98,
+   "cpu_percent_before": 100.0,
+   "hogs": 32,
+   "demoted": 0,
+   "actions": [],
+   "repeat": 0
+  },
+  {
+   "condition": "governed",
+   "tasks": 400,
+   "mean_ms": 11.49,
+   "p50_ms": 7.77,
+   "p95_ms": 8.26,
+   "p99_ms": 143.81,
+   "max_ms": 149.11,
+   "cpu_percent_before": 100.0,
+   "hogs": 32,
+   "demoted": 33,
+   "actions": [
+    "demote",
+    "demote"
+   ],
+   "repeat": 0
+  },
+  {
+   "condition": "idle",
+   "tasks": 400,
+   "mean_ms": 2.97,
+   "p50_ms": 2.95,
+   "p95_ms": 3.16,
+   "p99_ms": 3.55,
+   "max_ms": 4.56,
+   "cpu_percent_before": 4.6,
+   "hogs": 0,
+   "demoted": 0,
+   "actions": [],
+   "repeat": 1
+  },
+  {
+   "condition": "contended",
+   "tasks": 400,
+   "mean_ms": 30.84,
+   "p50_ms": 7.39,
+   "p95_ms": 147.79,
+   "p99_ms": 151.15,
+   "max_ms": 187.34,
+   "cpu_percent_before": 100.0,
+   "hogs": 32,
+   "demoted": 0,
+   "actions": [],
+   "repeat": 1
+  },
+  {
+   "condition": "governed",
+   "tasks": 400,
+   "mean_ms": 8.35,
+   "p50_ms": 7.64,
+   "p95_ms": 10.35,
+   "p99_ms": 26.4,
+   "max_ms": 47.69,
+   "cpu_percent_before": 100.0,
+   "hogs": 32,
+   "demoted": 40,
+   "actions": [
+    "demote",
+    "demote",
+    "demote",
+    "demote",
+    "demote",
+    "demote",
+    "demote"
+   ],
+   "repeat": 1
+  },
+  {
+   "condition": "idle",
+   "tasks": 400,
+   "mean_ms": 3.32,
+   "p50_ms": 3.29,
+   "p95_ms": 3.79,
+   "p99_ms": 3.94,
+   "max_ms": 4.2,
+   "cpu_percent_before": 22.4,
+   "hogs": 0,
+   "demoted": 0,
+   "actions": [],
+   "repeat": 2
+  },
+  {
+   "condition": "contended",
+   "tasks": 400,
+   "mean_ms": 33.7,
+   "p50_ms": 7.89,
+   "p95_ms": 144.39,
+   "p99_ms": 162.32,
+   "max_ms": 210.61,
+   "cpu_percent_before": 100.0,
+   "hogs": 32,
+   "demoted": 0,
+   "actions": [],
+   "repeat": 2
+  },
+  {
+   "condition": "governed",
+   "tasks": 400,
+   "mean_ms": 7.85,
+   "p50_ms": 7.8,
+   "p95_ms": 8.36,
+   "p99_ms": 8.89,
+   "max_ms": 11.44,
+   "cpu_percent_before": 100.0,
+   "hogs": 32,
+   "demoted": 35,
+   "actions": [
+    "demote",
+    "demote",
+    "demote"
+   ],
+   "repeat": 2
+  }
+ ],
+ "logical_cores": 16,
+ "note": "priority class change only, no process stopped"
+}
